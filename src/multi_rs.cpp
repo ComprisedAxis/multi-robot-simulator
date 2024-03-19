@@ -3,6 +3,8 @@
 #include "lib/world_item.h"
 #include "lib/laser_scanner.h"
 
+#include <json/json.h>
+
 using namespace std;
 
 Isometry2f fromCoefficients(float tx, float ty, float alpha) {

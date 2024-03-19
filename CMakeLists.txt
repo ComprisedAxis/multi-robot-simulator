@@ -203,5 +203,5 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-add_executable(multi_simulator src/multi_simulator.cpp src/lib/grid_map.cpp src/lib/world_item.cpp src/lib/laser_scanner.cpp)
-target_link_libraries(multi_simulator ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_executable(multi_rs src/multi_rs.cpp src/lib/grid_map.cpp src/lib/world_item.cpp src/lib/laser_scanner.cpp)
+target_link_libraries(multi_rs ${catkin_LIBRARIES} ${OpenCV_LIBS} ${JSONCPP_LIBRARIES})
