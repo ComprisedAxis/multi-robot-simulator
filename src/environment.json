@@ -1,11 +1,14 @@
 {
   "environment": {
-     "map": "cappero_laser_odom_diag_2020-05-06-16-26-03.png" 
-  },
+     "map": {
+      "file": "so if the path is /home/ubuntuenrico/catkin_ws/src/multi_robot_simulator/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png",
+      "resolution": 0.1
+    } },
   "robots": [
     {
       "name": "robot_1",
-      "frame_id": "robot_1/base_link", 
+      "frame_id": "robot_1/base_link",
+      "position": {"x": 1.0, "y": 2.0},
       "max_linear_vel": 0.5,  
       "max_angular_vel": 1.0, 
       "devices": [
@@ -15,14 +18,14 @@
           "topics": { "scan": "/robot_1/scan" },
           "beams": 360,   
           "min_range": 0.2, 
-          "max_range": 5.0, 
-          "position": {"x": 0.2, "y": 0, "z": 0.1} 
+          "max_range": 5.0
         }
       ]
     },
     { 
        "name": "robot_2", 
        "frame_id": "robot_2/base_link",
+       "position": {"x": 2.0, "y": 2.0},
        "max_linear_vel": 0.6,  
        "max_angular_vel": 0.8, 
        "devices": [
@@ -32,14 +35,14 @@
            "topics": { "scan": "/robot_2/scan" },
            "beams": 270,   
            "min_range": 0.15, 
-           "max_range": 3.0, 
-           "position": {"x": 0, "y": 0.2, "z": 0.15} 
+           "max_range": 3.0
          }
        ] 
     },
     { 
       "name": "robot_3",
       "frame_id": "robot_3/base_link", 
+      "position": {"x": 3.0, "y": 2.0},
       "max_linear_vel": 0.5,  
       "max_angular_vel": 1.0, 
       "devices": [
@@ -49,14 +52,14 @@
           "topics": { "scan": "/robot_3/scan" },
           "beams": 360,   
           "min_range": 0.2, 
-          "max_range": 5.0, 
-          "position": {"x": 0.2, "y": 0.3, "z": 0.2} 
+          "max_range": 5.0
         }
       ]
     },
     { 
       "name": "robot_4",
-      "frame_id": "robot_4/base_link", 
+      "frame_id": "robot_4/base_link",
+      "position": {"x": 4.0, "y": 2.0},
       "max_linear_vel": 0.5,  
       "max_angular_vel": 1.0, 
       "devices": [
@@ -66,14 +69,14 @@
           "topics": { "scan": "/robot_1/scan" },
           "beams": 360,   
           "min_range": 0.2, 
-          "max_range": 5.0, 
-          "position": {"x": 0.4, "y": 0.4, "z": 0.1} 
+          "max_range": 5.0
         }
       ]
     },
     { 
       "name": "robot_5",
-      "frame_id": "robot_5/base_link", 
+      "frame_id": "robot_5/base_link",
+      "position": {"x": 5.0, "y": 2.0},
       "max_linear_vel": 0.5,  
       "max_angular_vel": 1.0, 
       "devices": [
@@ -83,8 +86,7 @@
           "topics": { "scan": "/robot_5/scan" },
           "beams": 360,   
           "min_range": 0.2, 
-          "max_range": 5.0, 
-          "position": {"x": 0.3, "y": 0, "z": 0.2} 
+          "max_range": 5.0
         }
       ]
     }    
