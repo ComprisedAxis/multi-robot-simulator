@@ -1,11 +1,78 @@
+#include <ros/ros.h>
+
 #include <iostream>
 #include "lib/grid_map.h"
 #include "lib/world_item.h"
 #include "lib/laser_scanner.h"
+#include "lib/laser_scan.h"
 
 #include <json/json.h>
+#include <fstream>
 
 using namespace std;
+
+bool parseEnvironmentConfig(const std::string& configFilePath, GridMap& grid_map, std::vector<UnicyclePlatform>& robots, std::vector<LaserScanner>& scanners) {
+    // Read the JSON file
+    std::ifstream configFile(configFilePath);
+    if (!configFile.is_open()) {
+        std::cerr << "Failed to open the configuration file: " << configFilePath << std::endl;
+        return false;
+    }
+
+    Json::Value root;
+    configFile >> root;
+
+    // Parse the map configuration
+    const Json::Value& mapConfig = root["map"];
+    std::string mapFilePath = mapConfig["file"].asString();
+    float resolution = mapConfig["resolution"].asFloat();
+    
+
+    // Load the grid map from the image file
+    grid_map.loadFromImage(mapFilePath.c_str(), resolution);
+
+    // Parse the robot configurations
+    const Json::Value& robotConfigs = root["robots"];
+    for (const auto& robotConfig : robotConfigs) {
+        float tx = robotConfig["position"]["x"].asFloat();
+        float ty = robotConfig["position"]["y"].asFloat();
+        float alpha = robotConfig["position"]["theta"].asFloat();
+        Isometry2f robotPose = fromCoefficients(tx, ty, alpha);
+
+        float maxLinearVelocity = robotConfig["max_linear_velocity"].asFloat();
+        float maxAngularVelocity = robotConfig["max_angular_velocity"].asFloat();
+
+        UnicyclePlatform robot(grid_map, robotPose);
+        robot.maxLinearVelocity = maxLinearVelocity;
+        robot.maxAngularVelocity = maxAngularVelocity;
+
+        robots.push_back(robot);
+    }
+
+    // Parse the laser scanner configurations
+    const Json::Value& scannerConfigs = root["laser_scanners"];
+    for (const auto& scannerConfig : scannerConfigs) {
+        float tx = scannerConfig["position"]["x"].asFloat();
+        float ty = scannerConfig["position"]["y"].asFloat();
+        float alpha = scannerConfig["position"]["theta"].asFloat();
+        Isometry2f scannerPose = fromCoefficients(tx, ty, alpha);
+
+        int beamCount = scannerConfig["beam_count"].asInt();
+        float maxRange = scannerConfig["max_range"].asFloat();
+        float minRange = scannerConfig["min_range"].asFloat();
+        float angleMin = scannerConfig["angle_min"].asFloat();
+        float angleMax = scannerConfig["angle_max"].asFloat();
+
+        LaserScan scan(minRange, maxRange, angleMin, angleMax, beamCount);
+        LaserScanner scanner(scan, grid_map, scannerPose);
+
+        scanners.push_back(scanner);
+    }
+
+    return true;
+}
+
+
 
 Isometry2f fromCoefficients(float tx, float ty, float alpha) {
   Isometry2f iso;
@@ -16,20 +83,18 @@ Isometry2f fromCoefficients(float tx, float ty, float alpha) {
 }
 
 int main(int argc, char** argv) {
-  if (argc < 2) {
-    cout << "usage: " << argv[0] << " <image_file> <resolution>" << endl;
-    return -1;
+
+  ros::init(argc, argv, "multi_rs");
+  ros::NodeHandle nh;
+
+  GridMap grid_map;
+  std::vector<UnicyclePlatform> robots;
+  std::vector<LaserScanner> scanners;  
+
+  if (!parseEnvironmentConfig("environment.json", grid_map, robots, scanners)) {
+      std::cerr << "Failed to parse the environment configuration." << std::endl;
+      return -1;
   }
-  const char* filename = argv[1];
-  float resolution = atof(argv[2]);
-
-  cout << "Running " << argv[0] << " with arguments" << endl
-       << "-filename:" << argv[1] << endl
-       << "-resolution: " << argv[2] << endl;
-
-  GridMap grid_map(0, 0, 0.1);
-  grid_map.loadFromImage(filename, resolution);
-
 
   World world_object(grid_map);
   WorldItem object_0(world_object, fromCoefficients(5, 0, 0.5));
